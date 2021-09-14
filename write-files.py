@@ -1,34 +1,20 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import errno
 import json
-import os
 import sys
 
 for name, value in json.load(sys.stdin).items():
 
-    # Skip if the file already exists with this value.
+    # Skip if the file already exists with the correct value.
     try:
         with open(name) as open_file:
             if open_file.read() == value:
                 continue
-    except Exception as error:
-        if error.errno != errno.ENOENT:
-            raise
+    except FileNotFoundError:
+        pass
 
-    # Create the file only if it doesn't already exist.
-    try:
-        fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL)
-    except OSError as error:
-        if error.errno == errno.EEXIST:
-            sys.stderr.write('{} already exists\n'.format(name))
-            sys.exit(1)
-        else:
-            raise
-    try:
-        f = os.fdopen(fd, 'w')
-        f.write(value)
-    finally:
-        f.close()
+    # Create/overwrite the file
+    with open(name, 'w') as open_file:
+        open_file.write(value)
 
 sys.stdout.write('{}')
