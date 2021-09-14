@@ -3,6 +3,6 @@ variable "files" {
 }
 
 data "external" "write_files" {
-  program = ["python", "${path.module}/write-files.py"]
-  query   = "${var.files}"
+  program = ["python3", "${path.module}/write-files.py"]
+  query   = var.files
 }
